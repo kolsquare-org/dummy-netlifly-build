@@ -22,18 +22,31 @@ jobs:
       - name: Reconfigure git to use HTTPS authentication
         run: |
           git config --global url."https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/".insteadOf "git@github.com:"
-      - run: |
+      - name: Identify target branch based on current branc
+        run: |
+          CURRENT_BRANCH=${GITHUB_REF_NAME}
+          echo $CURRENT_BRANCH
+          if [[ $CURRENT_BRANCH == 'master' ]]; then
+            DEPLOY_BRANCH='deploy/production'
+          elif [[ $CURRENT_BRANCH == 'release/staging' ]]; then
+            DEPLOY_BRANCH='deploy/staging'
+          elif [[ $CURRENT_BRANCH == 'release/lab' ]]; then
+            DEPLOY_BRANCH='deploy/lab'
+          fi
+          echo $DEPLOY_BRANCH
+      - name: Generate dummy changes
+        run: |
           date > generated.txt
           git config user.name github-actions
           git config user.email github-actions@github.com
           git config push.autoSetupRemote true
           git add .
           git commit -m "generated"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: deploy/production # ${{ github.ref }}
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: deploy/production # ${{ github.ref }}
       # - name: Delete and recreate deploy branch
       #   run: |
       #     BRANCH='deploy/production'
