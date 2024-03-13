@@ -49,7 +49,6 @@ jobs:
             echo "Git branch '$DEPLOY_BRANCH' does not exist in the remote repository"
           fi
           git checkout -b "$DEPLOY_BRANCH"
-          git push origin "$DEPLOY_BRANCH"
       - name: Generate dummy changes
         run: |
           date > generated.txt
