@@ -1,0 +1,24 @@
+name: 'Deploy INFLUENCE on Netlify'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release/staging
+      - release/lab
+      - master
+    # paths:
+    #   - 'influence/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to the repository
+        uses: actions/checkout@v3
+      - name: Delete and recreate deploy branch
+        shell: bash
+        run: |
+          git branch -d -r deploy/production
+          git checkout -b deploy/production
+          git push origin deploy/production
