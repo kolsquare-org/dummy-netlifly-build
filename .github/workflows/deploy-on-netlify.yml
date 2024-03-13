@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
       - name: Reconfigure git to use HTTPS authentication
         run: |
-          git config --global url."https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/".insteadOf "git@github.com:"
+          git config --global url."https://x-access-token:${{GITHUB_TOKEN}}@github.com/".insteadOf "git@github.com:"
       - run: |
           date > generated.txt
           git config user.name github-actions
