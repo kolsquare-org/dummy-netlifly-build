@@ -34,8 +34,8 @@ jobs:
             DEPLOY_BRANCH='deploy/lab'
           fi
           echo $DEPLOY_BRANCH
-          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> "$GITHUB_ENV"
-          echo "DEPLOY_BRANCH=$DEPLOY_BRANCH" >> "$GITHUB_ENV"
+          echo "CURRENT_BRANCH=${CURRENT_BRANCH}" >> "$GITHUB_ENV"
+          echo "DEPLOY_BRANCH=${DEPLOY_BRANCH}" >> "$GITHUB_ENV"
       - name: Generate dummy changes
         run: |
           date > generated.txt
@@ -48,7 +48,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: $DEPLOY_BRANCH
+          branch: ${{ env.DEPLOY_BRANCH }}
       # - name: Delete and recreate deploy branch
       #   run: |
       #     BRANCH='deploy/production'
