@@ -7,8 +7,8 @@ on:
       - release/staging
       - release/lab
       - master
-    # paths:
-    #   - 'influence/**'
+permissions:
+  contents: write
 
 jobs:
   deploy:
@@ -16,17 +16,38 @@ jobs:
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v3
-      - name: Delete and recreate deploy branch
-        shell: bash
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Reconfigure git to use HTTPS authentication
         run: |
-          BRANCH='deploy/production'
-          git ls-remote --exit-code --heads origin $BRANCH >/dev/null 2>&1
-          EXIT_CODE=$?
-          if [[ $EXIT_CODE == '0' ]]; then
-            echo "Git branch '$BRANCH' exists in the remote repository"
-            git branch -d -r deploy/production
-          elif [[ $EXIT_CODE == '2' ]]; then
-            echo "Git branch '$BRANCH' does not exist in the remote repository"
-          fi
-          git checkout -b deploy/production
-          git push origin deploy/production
+          git config --global url."https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/".insteadOf "git@github.com:"
+      - run: |
+          date > generated.txt
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git config push.autoSetupRemote true
+          git add .
+          git commit -m "generated"
+          git push
+      # - name: Delete and recreate deploy branch
+      #   run: |
+      #     BRANCH='deploy/production'
+      #     git config --global "url.https://${GH_TOKEN}@github.com/.insteadOf" https://github.com/
+      #     # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+      #     # git --version
+      #     # git config user.name "GitHub Actions [Bot]"
+      #     # git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     # ls .git/refs/heads
+      #     (git ls-remote --exit-code --heads origin $BRANCH)
+      #     # (git ls-remote --exit-code --heads origin $BRANCH >/dev/null 2>&1)
+      #     EXIT_CODE=$?
+      #     echo $EXIT_CODE
+      #     # if [[ $EXIT_CODE == '0' ]]; then
+      #     #   echo "Git branch '$BRANCH' exists in the remote repository"
+      #     #   git branch -d -r deploy/production
+      #     # elif [[ $EXIT_CODE == '2' ]]; then
+      #     #   echo "Git branch '$BRANCH' does not exist in the remote repository"
+      #     # fi
+      #     # git checkout -b deploy/production
+      #     # git push origin deploy/production
