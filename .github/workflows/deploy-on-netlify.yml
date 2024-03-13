@@ -34,6 +34,8 @@ jobs:
             DEPLOY_BRANCH='deploy/lab'
           fi
           echo $DEPLOY_BRANCH
+          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> "$GITHUB_ENV"
+          echo "DEPLOY_BRANCH=$DEPLOY_BRANCH" >> "$GITHUB_ENV"
       - name: Generate dummy changes
         run: |
           date > generated.txt
