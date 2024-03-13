@@ -42,11 +42,11 @@ jobs:
           git config push.autoSetupRemote true
           git add .
           git commit -m "generated"
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: deploy/production # ${{ github.ref }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: $DEPLOY_BRANCH
       # - name: Delete and recreate deploy branch
       #   run: |
       #     BRANCH='deploy/production'
