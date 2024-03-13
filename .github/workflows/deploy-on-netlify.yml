@@ -19,6 +19,14 @@ jobs:
       - name: Delete and recreate deploy branch
         shell: bash
         run: |
-          git branch -d -r deploy/production
+          BRANCH='deploy/production'
+          git ls-remote --exit-code --heads origin $BRANCH >/dev/null 2>&1
+          EXIT_CODE=$?
+          if [[ $EXIT_CODE == '0' ]]; then
+            echo "Git branch '$BRANCH' exists in the remote repository"
+            git branch -d -r deploy/production
+          elif [[ $EXIT_CODE == '2' ]]; then
+            echo "Git branch '$BRANCH' does not exist in the remote repository"
+          fi
           git checkout -b deploy/production
           git push origin deploy/production
