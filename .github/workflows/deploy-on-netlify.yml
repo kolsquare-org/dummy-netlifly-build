@@ -42,13 +42,7 @@ jobs:
           git --version
           git config user.name "GitHub Actions [Bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git ls-remote --exit-code --heads origin "$DEPLOY_BRANCH" >/dev/null; then
-            echo "Git branch '$DEPLOY_BRANCH' exists in the remote repository"
-            # Delete local branch so we can move HEAD to last commit
-            git branch -D "$DEPLOY_BRANCH"
-          else
-            echo "Git branch '$DEPLOY_BRANCH' does not exist in the remote repository"
-          fi
+          git checkout -B "$DEPLOY_BRANCH"
       - name: Generate dummy changes
         run: |
           date > generated.txt
