@@ -5,9 +5,22 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  json,
+  useLoaderData,
 } from "@remix-run/react";
+import PublicEnv from './ui/public-env';
+
+export async function loader() {
+  return json({
+    ENV: {
+      NODE_ENV: process.env.NODE_ENV,
+      FROM_GITHUB: process.env.FROM_GITHUB,
+    },
+  });
+}
 
 export default function App() {
+  const { ENV } = useLoaderData<typeof loader>();
   return (
     <html lang="en">
       <head>
@@ -19,6 +32,8 @@ export default function App() {
       <body>
         <Outlet />
         <ScrollRestoration />
+        {/* Put ENV on window - This is how we hand off the values from the server to the client. Make sure to put this before <Scripts/> */}
+        <PublicEnv {...ENV} />
         <Scripts />
         <LiveReload />
       </body>
