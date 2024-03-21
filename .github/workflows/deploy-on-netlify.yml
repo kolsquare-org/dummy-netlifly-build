@@ -42,9 +42,9 @@ jobs:
     needs: [compute-deploy-branch-and-context]
     steps:
       - name: Set up NodeJS environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Netlify CLI
         run: |
           npm install netlify-cli -g
@@ -57,7 +57,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   deploy:
     runs-on: ubuntu-latest
-    needs: [push-envs-to-netlify]
+    needs: [push-envs-to-netlify, compute-deploy-branch-and-context]
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v4
