@@ -11,8 +11,54 @@ permissions:
   contents: write
 
 jobs:
+  compute-deploy-branch-and-context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Identify target branch based on current branch
+        id: compute_env
+        run: |
+          CURRENT_BRANCH=${GITHUB_REF_NAME}
+          echo "CURRENT_BRANCH = $CURRENT_BRANCH"
+          if [[ $CURRENT_BRANCH == 'master' ]]; then
+            DEPLOY_BRANCH='deploy/production'
+            NETLIFY_CONTEXT = 'production'
+          elif [[ $CURRENT_BRANCH == 'release/staging' ]]; then
+            DEPLOY_BRANCH='deploy/staging'
+            NETLIFY_CONTEXT = 'branch-deploy'
+          elif [[ $CURRENT_BRANCH == 'release/lab' ]]; then
+            DEPLOY_BRANCH='deploy/lab'
+            NETLIFY_CONTEXT = 'branch-deploy'
+          fi
+          echo "DEPLOY_BRANCH = $DEPLOY_BRANCH"
+          echo "CURRENT_BRANCH=${CURRENT_BRANCH}" >> $GITHUB_OUTPUT
+          echo "DEPLOY_BRANCH=${DEPLOY_BRANCH}" >> $GITHUB_OUTPUT
+          echo "NETLIFY_CONTEXT=${NETLIFY_CONTEXT}" >> $GITHUB_OUTPUT
+    outputs:
+      CURRENT_BRANCH: ${{ steps.compute_env.outputs.CURRENT_BRANCH }}
+      DEPLOY_BRANCH: ${{ steps.compute_env.outputs.DEPLOY_BRANCH }}
+      NETLIFY_CONTEXT: ${{ steps.compute_env.outputs.NETLIFY_CONTEXT }}
+  push-envs-to-netlify:
+    runs-on: ubuntu-latest
+    needs: [compute-deploy-branch-and-context]
+    steps:
+      - name: Set up NodeJS environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Netlify CLI
+        run: |
+          npm install netlify-cli -g
+      - name: Push env to Netlify
+        run: |
+          netlify link
+          netlify env:set FROM_GITHUB ${{ secrets.FROM_GITHUB }} --context ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --secret
+          netlify env:set VAR_FROM_GITHUB ${{ vars.VAR_FROM_GITHUB }} --context ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --secret
+          netlify env:set NETLIFY_CONTEXT ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --context ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --secret
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   deploy:
     runs-on: ubuntu-latest
+    needs: [push-envs-to-netlify]
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v4
@@ -22,20 +68,6 @@ jobs:
       - name: Reconfigure git to use HTTPS authentication
         run: |
           git config --global url."https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/".insteadOf "git@github.com:"
-      - name: Identify target branch based on current branch
-        run: |
-          CURRENT_BRANCH=${GITHUB_REF_NAME}
-          echo "CURRENT_BRANCH = $CURRENT_BRANCH"
-          if [[ $CURRENT_BRANCH == 'master' ]]; then
-            DEPLOY_BRANCH='deploy/production'
-          elif [[ $CURRENT_BRANCH == 'release/staging' ]]; then
-            DEPLOY_BRANCH='deploy/staging'
-          elif [[ $CURRENT_BRANCH == 'release/lab' ]]; then
-            DEPLOY_BRANCH='deploy/lab'
-          fi
-          echo "DEPLOY_BRANCH = $DEPLOY_BRANCH"
-          echo "CURRENT_BRANCH=${CURRENT_BRANCH}" >> "$GITHUB_ENV"
-          echo "DEPLOY_BRANCH=${DEPLOY_BRANCH}" >> "$GITHUB_ENV"
       - name: Delete and recreate deploy branch
         run: |
           # setup the username and email
@@ -43,11 +75,6 @@ jobs:
           git config user.name "GitHub Actions [Bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B "$DEPLOY_BRANCH"
-      - name: Generate .env file
-        run: |
-          echo "FROM_GITHUB=${{ secrets.FROM_GITHUB }}" > .env
-          echo "VAR_FROM_GITHUB=${{ vars.VAR_FROM_GITHUB }}" >> .env
-          more .env
       - name: Generate dummy changes
         run: |
           date > generated.txt
