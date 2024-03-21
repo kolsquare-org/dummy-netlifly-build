@@ -55,6 +55,7 @@ jobs:
           netlify env:set NETLIFY_CONTEXT ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: 66d268a4-c61a-4bd6-b3b9-5a3571dbf5af
   deploy:
     runs-on: ubuntu-latest
     needs:
