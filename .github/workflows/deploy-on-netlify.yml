@@ -50,7 +50,6 @@ jobs:
           npm install netlify-cli -g
       - name: Push env to Netlify
         run: |
-          netlify link
           netlify env:set FROM_GITHUB ${{ secrets.FROM_GITHUB }} --context ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --secret
           netlify env:set VAR_FROM_GITHUB ${{ vars.VAR_FROM_GITHUB }} --context ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --secret
           netlify env:set NETLIFY_CONTEXT ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --context ${{ needs.compute-deploy-branch-and-context.outputs.compute-deploy-branch-and-context.NETLIFY_CONTEXT }} --secret
