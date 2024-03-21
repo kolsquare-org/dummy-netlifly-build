@@ -22,7 +22,7 @@ jobs:
       - name: Reconfigure git to use HTTPS authentication
         run: |
           git config --global url."https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/".insteadOf "git@github.com:"
-      - name: Identify target branch based on current branc
+      - name: Identify target branch based on current branch
         run: |
           CURRENT_BRANCH=${GITHUB_REF_NAME}
           echo "CURRENT_BRANCH = $CURRENT_BRANCH"
@@ -43,6 +43,11 @@ jobs:
           git config user.name "GitHub Actions [Bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B "$DEPLOY_BRANCH"
+      - name: Generate .env file
+        run: |
+          echo "FROM_GITHUB=${{ secrets.FROM_GITHUB }}" > .env
+          echo "VAR_FROM_GITHUB=${{ vars.VAR_FROM_GITHUB }}" >> .env
+          more .env
       - name: Generate dummy changes
         run: |
           date > generated.txt
