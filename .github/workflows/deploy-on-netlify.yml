@@ -24,10 +24,10 @@ jobs:
             NETLIFY_CONTEXT='production'
           elif [[ $CURRENT_BRANCH == 'release/staging' ]]; then
             DEPLOY_BRANCH='deploy/staging'
-            NETLIFY_CONTEXT='branch-deploy'
+            NETLIFY_CONTEXT='branch:deploy/staging'
           elif [[ $CURRENT_BRANCH == 'release/lab' ]]; then
             DEPLOY_BRANCH='deploy/lab'
-            NETLIFY_CONTEXT='branch-deploy'
+            NETLIFY_CONTEXT='branch:deploy/lab'
           fi
           echo "DEPLOY_BRANCH = $DEPLOY_BRANCH"
           echo "CURRENT_BRANCH=${CURRENT_BRANCH}" >> $GITHUB_OUTPUT
