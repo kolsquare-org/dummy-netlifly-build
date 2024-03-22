@@ -55,7 +55,7 @@ jobs:
           netlify env:set VAR_FROM_GITHUB ${{ vars.VAR_FROM_GITHUB }}
           netlify env:set NETLIFY_CONTEXT ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }}
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_AUTH_TOKEN: "nfp_Mi2spyAmb4bsfdsAcBsBGm2hRQq5Zf3378f2"
           NETLIFY_SITE_ID: "66d268a4-c61a-4bd6-b3b9-5a3571dbf5af"
   deploy:
     runs-on: ubuntu-latest
