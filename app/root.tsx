@@ -15,12 +15,14 @@ export async function loader() {
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
       FROM_GITHUB: process.env.FROM_GITHUB,
+      VAR_FROM_GITHUB: process.env.VAR_FROM_GITHUB,
     },
   });
 }
 
 export default function App() {
   const { ENV } = useLoaderData<typeof loader>();
+  console.log('ENV :>>', ENV);
   return (
     <html lang="en">
       <head>
