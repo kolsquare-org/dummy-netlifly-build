@@ -50,12 +50,13 @@ jobs:
           npm install netlify-cli -g
       - name: Push env to Netlify
         run: |
+          netlify env:list --plain
           netlify env:set FROM_GITHUB ${{ secrets.FROM_GITHUB }}
           netlify env:set VAR_FROM_GITHUB ${{ vars.VAR_FROM_GITHUB }}
           netlify env:set NETLIFY_CONTEXT ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: 66d268a4-c61a-4bd6-b3b9-5a3571dbf5af
+          NETLIFY_SITE_ID: "66d268a4-c61a-4bd6-b3b9-5a3571dbf5af"
   deploy:
     runs-on: ubuntu-latest
     needs:
