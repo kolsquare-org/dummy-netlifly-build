@@ -50,9 +50,9 @@ jobs:
           npm install netlify-cli -g
       - name: Push env to Netlify
         run: |
-          netlify env:set FROM_GITHUB ${{ secrets.FROM_GITHUB }} --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
-          netlify env:set VAR_FROM_GITHUB ${{ vars.VAR_FROM_GITHUB }} --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
-          netlify env:set NETLIFY_CONTEXT ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
+          netlify env:set FROM_GITHUB "${{ secrets.FROM_GITHUB }}" --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
+          netlify env:set VAR_FROM_GITHUB "${{ vars.VAR_FROM_GITHUB }}" --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
+          netlify env:set NETLIFY_CONTEXT "${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }}" --context ${{ needs.compute-deploy-branch-and-context.outputs.NETLIFY_CONTEXT }} --secret
         env:
           NETLIFY_AUTH_TOKEN: "nfp_Mi2spyAmb4bsfdsAcBsBGm2hRQq5Zf3378f2"
           NETLIFY_SITE_ID: "66d268a4-c61a-4bd6-b3b9-5a3571dbf5af"
